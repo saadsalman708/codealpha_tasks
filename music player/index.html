@@ -13,10 +13,15 @@
 
         <main>
             <div class="main-body">
-                <div>
+                <div class="play-box">
 
-                <div>
+                <div class="img-display-container">
                     <div class="imgg"></div>
+                    <div class="bg-blur-display">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
                 </div>
 
                 <div>
@@ -37,6 +42,7 @@
                     </div>
 
                     <div class="btns">
+                        <button id="replayBtn">Replay</button>
                         <button id="pervBtn">Previous</button>
                         <button id="playStopBtn">Play</button>
                         <button id="nextBtn">Next</button>
@@ -50,15 +56,13 @@
             
             
             <div id="playListContainer">
-                <div id="playListBox">
-                    <!-- <div>
-                        <div>img</div>
-                        <div>
-                            <span>title</span>
-                            <span>artist</span>
-                        </div>
-                    </div> -->
+                <div>
+                    <span>
+                        shuffle playlist
+                        <button id="shuffleBtn">shuffle</button>
+                    </span>
                 </div>
+                <div id="playListBox"></div>
             </div>
         </div>
         </main>

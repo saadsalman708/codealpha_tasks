@@ -8,7 +8,9 @@ const progressBar = document.querySelector("#progressBar");
 const progressBarContainer = document.querySelector("#progressBarContainer");
 const playListBox = document.querySelector("#playListBox");
 const playStopBtn = document.querySelector("#playStopBtn");
+const shuffleBtn = document.querySelector("#shuffleBtn");
 const titleInput = document.querySelector("#title");
+const replayBtn = document.querySelector("#replayBtn");
 const volumnBar = document.querySelector("#volumnBar");
 const volumnBarContainer = document.querySelector("#volumnBarContainer");
 
@@ -169,7 +171,7 @@ const songs = [
     },
 ];
 
-
+let queue = [...songs];
 
 
 
@@ -183,9 +185,15 @@ const songs = [
 
 
 // const getSongs = async () => {
-//     const res = await fetch("https://allorigins.win" + encodeURIComponent("https://deezer.com/15246375503/tracks"));
-//     await console.log( await res.json);
-
+//     // const res = await fetch("https://api.deezer.com/playlist/15246375503");
+//     // const res = await fetch("https://api.deezer.com/user/54321/playlists");
+//     const res = await fetch("https://api.allorigins.win/raw?url=https://api.deezer.com/playlist/15246375503");
+//     const data = await res.json;
+//     // console.log( JSON.parse(data) );
+//         console.log(data);
+//         console.log(await res.json);
+//         console.log(await res.json());
+    
 // }
 
 // getSongs()
@@ -197,6 +205,59 @@ const songs = [
 
 
 
+const getSongs = async () => {
+    const res = await fetch(
+        "https://saavn.dev/api/search/songs?query=eminem"
+    );
+
+    const data = await res.json();
+
+    console.log(data.data.results);
+
+    const songs = data.data.results.map(song => ({
+        title: song.name,
+        artist: song.primaryArtists,
+        image: song.image[2]?.link,
+        url: song.downloadUrl?.[4]?.link // high quality stream URL (sometimes works)
+    }));
+
+    console.log(songs);
+};
+
+getSongs();
+
+
+
+
+
+
+
+
+// const fetchSongs = async () => {
+// const url = encodeURIComponent("https://api.deezer.com/playlist/15246375503");
+
+// // fetch(`https://thingproxy.freeboard.io/fetch/${url}`)
+
+//     // const res = await fetch(`https://thingproxy.freeboard.io/fetch/${url}`);
+//     // const res = await fetch(`https://api.allorigins.win/get?url=${url}`);
+//     const data = await res.json();    
+
+//     const parsed = JSON.parse(data.contents);
+
+//     const tracks = parsed.tracks.data.map(track => ({
+//         title: track.title,
+//         artist: track.artist.name,
+//         preview: track.preview,
+//         duration: track.duration
+//     }));
+
+//     queue = tracks;
+
+//     renderPlayList();
+//     loadSong();
+// };
+
+// fetchSongs();
 
 
 
@@ -207,6 +268,27 @@ const songs = [
 
 
 
+
+
+
+
+const shuffleQueue = () => {
+    const currentSong = queue[currentSongIdx];
+
+    let rest = queue.filter((_, i) => i !== currentSongIdx);
+
+    for (let i = rest.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [rest[i], rest[j]] = [rest[j], rest[i]];
+    }
+
+    queue = [currentSong, ...rest];
+    currentSongIdx = 0;
+    renderPlayList();
+    const currentSongFromPlayList = document.getElementById(currentSongIdx);
+    currentSongFromPlayList.classList.add("highlight");
+    // playListBox.children[currentSongIdx].classList.add("highlight");
+};
 
 
 const formatTime = (seconds) => {
@@ -218,30 +300,45 @@ const formatTime = (seconds) => {
 
 
 const loadSong = (i = currentSongIdx) => {
-    let { title, artist, path, duration } = songs[i];
+    const { title, artist, path, duration } = queue[i];
     titleInput.innerHTML = title;
     artistInput.innerHTML = artist;
     audioTag.src = path;
     audioTag.onloadedmetadata = () => {
         durationInput.innerHTML = formatTime(audioTag.duration);
     };
+
+    const currentActive = document.querySelector(".highlight");
+    if (currentActive) {
+        currentActive.classList.remove("highlight");
+    };
+    // playListBox.children[i].classList.add("highlight");    
+    const currentSongFromPlayList = document.getElementById(i);
+    currentSongFromPlayList.classList.add("highlight");
+
+    progressBar.style.width = "0%";
+    currentDurationInput.innerHTML = "00:00";
 };
 
 
 
-const changeSong = (direction, shouldPlay = false) => {
-    // shouldPlay => decides should next songs play
-
-    let isPlaying = !audioTag.paused;
-
+const changeIndex = (direction) => {
     if (direction === "+") {
-        currentSongIdx = currentSongIdx >= songs.length - 1 ? 0 : currentSongIdx + 1;
-    } else if (direction === "-") {
-        currentSongIdx = currentSongIdx <= 0 ? songs.length - 1 : currentSongIdx - 1;
+        currentSongIdx = currentSongIdx >= queue.length - 1 ? 0 : currentSongIdx + 1;
+    } else  {
+        currentSongIdx = currentSongIdx <= 0 ? queue.length - 1 : currentSongIdx - 1;
     }
 
-    progressBar.style.width = "0%";
-    currentDurationInput.innerHTML = "00:00";
+    loadMaybePlay();
+};
+
+
+
+const loadMaybePlay = (shouldPlay = false)=> {
+    // shouldPlay => decides should next songs play
+
+    const isPlaying = !audioTag.paused;
+
     loadSong();
     if (isPlaying || shouldPlay) audioTag.play();
 };
@@ -250,7 +347,7 @@ const changeSong = (direction, shouldPlay = false) => {
 
 const playThisSong = (i)=> {
     currentSongIdx = i;
-    changeSong(null , true)
+    loadMaybePlay(true);
 };
 
 
@@ -266,15 +363,17 @@ const calculateProgressRatio = (e) => {
 
 const renderPlayList = () => {
 
-    const s = songs.map(({ title, artist } , index) => {
-        return `<div onclick="playThisSong(${index})">
-                        <div>imaag</div>
-                        <div>
-                            <span>${title}</span>
-                            <br />
-                            <span>${artist}</span>
-                        </div>
-                    </div>`;
+    const s = queue.map(({ title, artist } , index) => {
+        return `
+                <div id="${index}" onclick="playThisSong(${index})">
+                    <div>imaag</div>
+                    <div>
+                        <span>${title}</span>
+                        <br />
+                        <span>${artist}</span>
+                    </div>
+                </div>
+                `;
     }).join("");
 
     playListBox.innerHTML = s;
@@ -304,7 +403,8 @@ audioTag.addEventListener("pause", () => {
 
 
 audioTag.addEventListener("ended", () => {
-    changeSong("+", true);   // true = should play next song
+    changeIndex("+");
+    loadMaybePlay(true);   // true = should play next song
 });
 
 
@@ -335,10 +435,27 @@ const togglePlay = () => {
 };
 
 
-
+shuffleBtn.addEventListener("click" , () => shuffleQueue());
 playStopBtn.addEventListener("click", () => togglePlay());
-pervBtn.addEventListener("click", () => changeSong("-"));
-nextBtn.addEventListener("click", () => changeSong("+"));
+pervBtn.addEventListener("click", () => changeIndex("-"));
+nextBtn.addEventListener("click", () => changeIndex("+"));
+replayBtn.addEventListener("click", () => {
+    audioTag.currentTime = 0;
+    audioTag.play();
+});
+
+
+addEventListener("keydown", (e) => {
+    if (e.code === "Space" || e.key.toLocaleLowerCase() === "f" || e.key.toLocaleLowerCase() === "p") {
+        togglePlay();
+    };
+    if (e.key === "ArrowRight" || (e.shiftKey && e.key.toLocaleLowerCase() === "n") ) {
+        changeIndex("+");
+    }
+    if (e.key === "ArrowLeft" || (e.shiftKey && e.key.toLocaleLowerCase() === "n") ) {
+        changeIndex("-");
+    }
+});
 
 
 
