@@ -3,55 +3,80 @@ const display = document.querySelector("#display");
 const equal = document.querySelector("#equal");
 const clear = document.querySelector("#clear");
 const del = document.querySelector("#del");
+const realTimeBox = document.querySelector("#realTimeBox");
 
 btns.forEach(btn =>{
     btn.addEventListener("click" , ()=>{
         addInDisplay(btn.value);
+        realTimeResult();
     });
 });
 
 const addInDisplay = (btnVal) => {
-    display.value === "Error" ? display.value = "" : "";
+    if (display.value === "Error") {
+        display.value = "";
+        realTimeBox.innerHTML = "";
+        return;
+    }
     display.value += btnVal;
 };
 
 const deleteLastChar = ()=> {
-    display.value === "Error" ? display.value = "" : "";
+    if (display.value === "Error") {
+        realTimeBox.innerHTML = "";
+        display.value = "";
+        return;
+    }
     display.value = display.value.slice(0 , -1);
 };
 
-const calculate = ()=> {
+const calculate = ( rtd = false )=> {
 
-    if (!display.value) return;
-    if (display.value === "Error") return display.value = "";
+    if (!display.value || display.value === "Error") return display.value = "";
 
-    const Foperators = ["+","%","*","/"];
-    const Loperators = ["+","-","%","*","/"];
-
-    let charCheckFL = Foperators.some(op => display.value.startsWith(op));
-    charCheckFL = Loperators.some(op => display.value.endsWith(op));
-
-    if (charCheckFL) return display.value = "Error";
+    if (!rtd) {
+        const Foperators = ["+","%","*","/"];
+        const Loperators = ["+","-","%","*","/"];
+    
+        let charCheckFL = Foperators.some(op => display.value.startsWith(op));
+        charCheckFL = Loperators.some(op => display.value.endsWith(op));
+    
+        if (charCheckFL) return display.value = "Error";
+    }
 
     try {
-        display.value = eval(display.value);
+        return eval(display.value);
     } catch (error) {
-        display.value = "Error";
+        return "Error";
     }
+};
+
+
+const calculatedDisplay = ()=> {
+    const result = calculate();
+    display.value = result;
+    realTimeBox.innerHTML = "";
+};
+
+const realTimeResult = ()=> {
+    const result = calculate( true );
+    if (result === "Error") return;
+        realTimeBox.innerHTML = result;
 };
 
 clear.addEventListener("click" , ()=> {
     display.value = "";
+    realTimeBox.innerHTML = "";
 });
 
 del.addEventListener("click" , deleteLastChar);
 
-equal.addEventListener("click", calculate);
+equal.addEventListener("click", calculatedDisplay);
 
 
 addEventListener("keydown" , e => {
         
-    if (e.key === "Enter") calculate();
+    if (e.key === "Enter") calculatedDisplay();
     if (e.key === "Backspace") deleteLastChar();
     if (e.key === "Delete") deleteLastChar();
     if (e.key === "Escape") display.value = "";
@@ -60,5 +85,6 @@ addEventListener("keydown" , e => {
 
     if (char.includes(e.key)) {
         addInDisplay(e.key);
+        realTimeResult();
     };
 });

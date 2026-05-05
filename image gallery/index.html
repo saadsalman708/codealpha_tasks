@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div>
+            <nav>
+                <div>Logo of Gallery</div>
+            </nav>
+
+            <main>
+                <div>
+                    <div id="cards-cont"></div>
+                </div>
+            </main>
+
+            <!----- lightbox ------>
+            <div class="lightbox">
+                <div class="container">
+                  <div class="closeDiv">
+                    <button id="closeBtn">Close</button>
+                  </div>
+                    <div class="img-display-cont">
+                        <button class="prevBtn"><</button>
+                        <img src="" id="lightbox-img" />
+                        <button class="nextBtn">></button>
+                    </div>
+                    <div class="disc"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script src="./app.js"></script>
+</html>

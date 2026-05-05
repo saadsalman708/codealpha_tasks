@@ -45,12 +45,29 @@
     grid-column: span 2;
 }
 
-input {
-    padding: 3rem 0 .5rem 1rem;
-    font-size: larger;
+.displayContainer {
+    background-color: #fff;
+    padding: 3rem 1rem .5rem 1rem;
     border-radius: 10px;
-    border: none;
     margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    overflow: hidden;
+}
+
+input {
+    font-size: 22px;
+    border: none;
+    outline: none;
+    text-align: end;
+    width: fit-content;
+}
+
+#realTimeBox {
+    font-size: 16px;
+    height: 24px;
+    color: #3e3e3e;
 }
 
 button {
