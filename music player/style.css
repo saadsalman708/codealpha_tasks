@@ -16,13 +16,14 @@
     grid-template-columns: 2fr 1fr;
 }
 
-.play-box {
+.player-box {
     padding: 2rem;
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     text-align: center;
+    color: #fff;
 }
 
 .img-display-container {
@@ -32,18 +33,28 @@
     position: relative;
 }
 
-.imgg {
+.img-display {
+    z-index: 3;
+}
+
+#img {
     background-color: pink;
     width: 80%;
     max-width: 250px;
     aspect-ratio: 1/1;
+    border-radius: 1rem;
+    position: relative;
+    border: 2px solid #fff;
 }
+
+
 
 .bg-blur-display {
     position: absolute;
     inset: 0;
     width: 100%;
-    filter: blur(4px);
+    filter: blur(6px);
+    z-index: 1;
 }
 
 
@@ -59,6 +70,9 @@ to {
 
 .bg-blur-display div {
     background-color: #fff;
+    background-image: url("https://c.saavncdn.com/023/Majboor-Hindi-2026-20260418080945-500x500.jpg");
+    background-size: cover;
+    background-position: center;
     position: absolute;
     top: 50%;
     left: 50%;    
@@ -66,19 +80,25 @@ to {
     scale: 1.1;
     transform: rotate(0deg);
     border-radius: 3rem;
-    width: 80%;
-    max-width: 250px;
+    width: 70%;
+    max-width: 180px;
     height: 100%;
     transform-origin: center;
+}
+
+.bg-blur-display div:nth-child(1) {
     animation: rotation 11s linear  infinite;
+    z-index: -3;
 }
 
 .bg-blur-display div:nth-child(2) {
     animation: rotation 11s linear reverse infinite;
+    z-index: -3;
 }
 
 .bg-blur-display div:nth-child(3) {
-    animation: rotation 11s linear 1.8s infinite;
+    animation: rotation 9s ease 1.8s infinite;
+    z-index: 3;
 }    
 
 .pB {
@@ -126,8 +146,17 @@ button {
 #playListContainer {
     background-color: aqua;
     height: 100dvh;
-    min-height: 100dvh;
-    overflow-y: scroll;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#playListBox {
+    /* height: auto; */
+    /* min-height: 100dvh; */
+    /* display: flex; */
+    /* flex-direction: column; */
+    overflow: scroll;
 }
 
 
@@ -145,5 +174,12 @@ button {
 @media (max-width: 786px) {
     .main-body {
         grid-template-columns: 1fr;
+    }
+#playListContainer {
+    height: 90dvh;
+}
+
+    .player-box {
+        min-height: 90dvh;
     }
 }
