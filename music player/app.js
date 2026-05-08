@@ -222,9 +222,11 @@ addEventListener("keydown", (e) => {
     (e.shiftKey && key === "n") ||
     (e.ctrlKey && key === "ArrowRight")
   ) {
+    e.preventDefault();
     changeIndex("+");
   }
   if (e.key === "ArrowLeft" || (e.ctrlKey && key === "ArrowLeft")) {
+    e.preventDefault();
     changeIndex("-");
   }
   if (
@@ -234,6 +236,7 @@ addEventListener("keydown", (e) => {
     (e.ctrlKey && key === "r") ||
     (e.ctrlKey && key === "s")
   ) {
+    e.preventDefault();
     shuffleSongs();
   }
   if (key === "r") {
